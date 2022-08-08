@@ -4,7 +4,7 @@
  * Scope of the application:
  * 1. Allow guests to login to their wordpress account.
  * 2. Allow users to list published posts with pagination.
- * 3. Allow users to remove (trash) post.
+ * 3. Allow users to CRUD actions on posts.
  * 4. Allow user to log out.
  *
  * Problems that need to be addressed:
@@ -41,12 +41,12 @@ function login(): void
                 die;
             }
         }else {
-            echo 'Invalid password!';
+            echo 'Missing password!';
             http_response_code(400);
             die;
         }
     } else {
-        echo 'Invalid email!';
+        echo 'Missing email!';
         http_response_code(400);
         die;
     }
@@ -55,10 +55,10 @@ function login(): void
     die;
 }
 
-add_action('wp_ajax_nopriv_delete_post', 'delete_post');
-add_action('wp_ajax_delete_post', 'delete_post');
+add_action('wp_ajax_nopriv_post_delete', 'post_delete');
+add_action('wp_ajax_post_delete', 'post_delete');
 
-function delete_post(): void
+function post_delete(): void
 {
     $post_id = $_GET['post'];
 
@@ -73,6 +73,33 @@ function delete_post(): void
 
     } else {
         echo 'Invalid post id!';
+        http_response_code(400);
+        die;
+    }
+
+    http_response_code(200);
+    die;
+}
+
+add_action('wp_ajax_nopriv_post_insert', 'post_insert');
+add_action('wp_ajax_post_insert', 'post_insert');
+
+function post_insert(): void
+{
+    $post = json_decode(stripslashes($_GET['post']), true);
+    $post = filter_var_array($post);
+
+    if ($post) {
+        $post = wp_insert_post($post);
+
+        if (is_wp_error($post)) {
+            echo $post->get_error_message();
+            http_response_code(400);
+            die;
+        }
+
+    } else {
+        echo 'Invalid post!';
         http_response_code(400);
         die;
     }

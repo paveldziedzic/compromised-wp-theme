@@ -3,7 +3,16 @@
 
     <div class="alert alert-warning mb-3 d-none" id="response-error" role="alert"></div>
 
-    <p>Current page: <?= $_GET['page'] ?? 1 ?></p>
+    <div class="row">
+        <div class="col-6">
+            <p>Current page: <?= $_GET['page'] ?? 1 ?></p>
+        </div>
+        <div class="col-6 d-flex justify-content-end">
+            <button onclick="load_view('add')" type="button"
+                    class="btn btn-outline-success">Add new</button>
+        </div>
+    </div>
+
     <table class="table">
         <thead>
         <tr>
@@ -32,7 +41,9 @@
                 <td><?= $post->post_title ?></td>
                 <td><?= $post->post_date ?></td>
                 <td><?= $author->display_name ?></td>
-                <td>
+                <td class="gap-10">
+                    <button onclick="load_view('edit', {post: <?= $post->ID ?>})" type="button"
+                            class="btn btn-secondary">Edit</button>
                     <button onclick="deletePost(event, <?= $post->ID ?>)" type="button"
                             class="btn btn-danger">Delete</button>
                 </td>
